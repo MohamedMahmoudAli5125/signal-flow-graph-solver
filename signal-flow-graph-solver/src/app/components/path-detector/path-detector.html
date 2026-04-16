@@ -1,0 +1,22 @@
+<h2>Signal Flow Graph</h2>
+
+<textarea [(ngModel)]="inputText" rows="8" cols="40"></textarea>
+
+<br><br>
+
+Start:
+<input type="number" [(ngModel)]="start">
+
+End:
+<input type="number" [(ngModel)]="end">
+
+<br><br>
+
+<button (click)="compute()">Compute</button>
+
+<h3>Paths:</h3>
+
+<div *ngFor="let p of paths; let i = index">
+  Path {{i+1}}:
+  {{p.nodes.join(' -> ')}} | Gain = {{p.gain}}
+</div>
