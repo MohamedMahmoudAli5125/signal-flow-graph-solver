@@ -46,6 +46,14 @@ export class GraphGui implements AfterViewInit {
             'text-margin-y': -10,
           },
         },
+        {
+          selector: '.ghost',
+          style: {
+            'background-color': '#2ecc71',
+            'opacity': 0.5,
+            'label': ''
+          }
+}
       ],
       layout: {
         name: 'grid',
@@ -54,7 +62,7 @@ export class GraphGui implements AfterViewInit {
     });
   this.cy.on('tap', (event) => {
   if (this.state === "AddNode") {
-    if (event.target === this.cy) {
+    if (event.target === this.cy || event.target.id() === 'ghost') {
       const pos = event.position;
       this.cy.add({
         group: 'nodes',
@@ -62,7 +70,14 @@ export class GraphGui implements AfterViewInit {
         position: pos,
       });
     }
-    this.state = "Select";
+  }
+});
+this.cy.on('mousemove',  (event) => {
+  if (this.state === "AddNode" ){
+    const ghostNode = this.cy.getElementById('ghost');
+      if (ghostNode.length > 0) {
+        ghostNode.position(event.position);
+      }
   }
 });
 }
@@ -73,19 +88,31 @@ export class GraphGui implements AfterViewInit {
 
   addNode() {
     this.state = "AddNode";
+    if(this.cy.getElementById('ghost').length === 0) {
+      this.cy.add({
+        group: 'nodes',
+        data: { id: 'ghost' },
+        position: { x: -100, y: -100 },
+        classes: 'ghost'
+      });
+    }
   }
   addEdge() {
+    this.select();
     const nodes = this.cy.nodes();
     if (nodes.length < 2) {
       alert('Please add at least 2 nodes to create an edge.');
       return;
     }
-    const source = nodes[0];
-    const target = nodes[1];
-    this.cy.add({
-      group: 'edges',
-      data: { source: source.id(), target: target.id(), gain: Math.random() * 10 },
-    });
+    
+
+  }
+  select() {
+    this.state = "Select";
+    const ghostNode = this.cy.getElementById('ghost');
+    if (ghostNode.length > 0) {
+      ghostNode.remove();
+    }
   }
 
 }
