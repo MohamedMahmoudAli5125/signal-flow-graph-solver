@@ -11,7 +11,9 @@ export class GraphGui implements AfterViewInit {
   @ViewChild('cy') cyContainer!: ElementRef;
   private cy!: cytoscape.Core;
   private nodecounter = 1;
+  private edgecounter = 1;
   private state = "Select";
+  private sourceNode: any = null;
 
   ngAfterViewInit() {
     this.initCytoscape();
@@ -72,6 +74,25 @@ export class GraphGui implements AfterViewInit {
     }
   }
 });
+this.cy.on('tap','node', (event) => {
+  if(this.state === "AddEdgeSource") {
+    this.sourceNode = event.target;
+    this.state = "AddEdgeTarget";}
+  else if (this.state === "AddEdgeTarget") {
+        const targetNode = event.target;
+        const gain = prompt('Enter edge gain:', '1');
+          if (gain !== null) {
+            this.cy.add({
+              group: 'edges',
+              data: {
+        id: `e${this.edgecounter++}_${this.sourceNode.id()}_${targetNode.id()}`, 
+        source: this.sourceNode.id(), 
+        target: targetNode.id(), 
+        gain: gain 
+        },});}
+        this.state = "AddEdgeSource";
+  }});
+
 this.cy.on('mousemove',  (event) => {
   if (this.state === "AddNode" ){
     const ghostNode = this.cy.getElementById('ghost');
@@ -104,8 +125,7 @@ this.cy.on('mousemove',  (event) => {
       alert('Please add at least 2 nodes to create an edge.');
       return;
     }
-    
-
+    this.state = "AddEdgeSource";
   }
   select() {
     this.state = "Select";
