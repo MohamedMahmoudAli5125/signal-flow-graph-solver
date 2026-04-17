@@ -32,6 +32,11 @@ export class GraphGui implements AfterViewInit {
             color: '#fff',
             'text-valign': 'center',
             'text-halign': 'center',
+            'font-weight': 'bold',
+            'width': 40,
+            'height': 40,
+            "border-color": '#fff',
+            "border-width": 2,
           },
         },
         {
@@ -45,8 +50,10 @@ export class GraphGui implements AfterViewInit {
             'label': 'data(gain)',
             'text-rotation': 'autorotate',
             'text-margin-x': 0,
-            'text-margin-y': -10,
+            'text-margin-y': -15,
             color: '#ffffff',
+            'font-weight': 'bold',
+            'control-point-step-size': 70,
           },
         },
         {
@@ -81,6 +88,14 @@ export class GraphGui implements AfterViewInit {
   if (this.state === "Delete") {
     if (event.target !== this.cy) {
       event.target.remove();
+    }
+  }
+  if (this.state === "Select" && event.target.isEdge()) {
+    const gain = prompt('Enter new edge gain:', event.target.data('gain'));
+    if (gain !== null && !isNaN(parseFloat(gain))) {
+      event.target.data('gain', parseFloat(gain));
+    } else {
+      alert('Invalid gain value. Please enter a number.');
     }
   }
 });
@@ -154,6 +169,7 @@ this.cy.on('mousemove',  (event) => {
     }
   }
   delete(){
+    this.select();
     this.state = "Delete";
   }
 
