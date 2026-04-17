@@ -12,7 +12,7 @@ export class GraphGui implements AfterViewInit {
   private cy!: cytoscape.Core;
   private nodecounter = 1;
   private edgecounter = 1;
-  private state = "Select";
+  state = "Select";
   private sourceNode: any = null;
 
   ngAfterViewInit() {
@@ -37,7 +37,7 @@ export class GraphGui implements AfterViewInit {
         {
           selector: 'edge',
           style: {
-            width: 2,
+            width: 3,
             'line-color': '#ff4136',
             'target-arrow-color': '#ff4136',
             'target-arrow-shape': 'triangle',
@@ -46,6 +46,7 @@ export class GraphGui implements AfterViewInit {
             'text-rotation': 'autorotate',
             'text-margin-x': 0,
             'text-margin-y': -10,
+            color: '#ffffff',
           },
         },
         {
@@ -73,6 +74,11 @@ export class GraphGui implements AfterViewInit {
       });
     }
   }
+  if (this.state === "Delete") {
+    if (event.target !== this.cy) {
+      event.target.remove();
+    }
+  }
 });
 this.cy.on('tap','node', (event) => {
   if(this.state === "AddEdgeSource") {
@@ -81,15 +87,19 @@ this.cy.on('tap','node', (event) => {
   else if (this.state === "AddEdgeTarget") {
         const targetNode = event.target;
         const gain = prompt('Enter edge gain:', '1');
-          if (gain !== null) {
+          if (gain !== null && !isNaN(parseFloat(gain))) {
             this.cy.add({
               group: 'edges',
               data: {
         id: `e${this.edgecounter++}_${this.sourceNode.id()}_${targetNode.id()}`, 
         source: this.sourceNode.id(), 
         target: targetNode.id(), 
-        gain: gain 
-        },});}
+        gain: parseFloat(gain)
+        },});
+      }
+      else {
+        alert('Invalid gain value. Please enter a number.');
+      }
         this.state = "AddEdgeSource";
   }});
 
@@ -133,6 +143,9 @@ this.cy.on('mousemove',  (event) => {
     if (ghostNode.length > 0) {
       ghostNode.remove();
     }
+  }
+  delete(){
+    this.state = "Delete";
   }
 
 }

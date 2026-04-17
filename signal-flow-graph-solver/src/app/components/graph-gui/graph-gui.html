@@ -1,8 +1,10 @@
-<p>graph-gui works!</p>
+
 <div class="controls">
-  <button (click)="addNode()">Add Node</button>
-  <button (click)="addEdge()">Add Edge</button>
-    <button (click)="select()">Select</button>
+    <h1>graph-gui works!</h1>
+    <button [class.active]="state === 'Select'" (click)="select()">👆 Select</button>
+    <button [class.active]="state === 'AddNode'" (click)="addNode()">➕ Add Node</button>
+    <button [class.active]="state === 'AddEdgeSource' || state === 'AddEdgeTarget'" (click)="addEdge()">🔗 Add Edge</button>
+    <button [class.active]="state === 'Delete'" (click)="delete()">🗑️ Delete</button>
 </div>
 
 <div #cy class="cy-container"></div>

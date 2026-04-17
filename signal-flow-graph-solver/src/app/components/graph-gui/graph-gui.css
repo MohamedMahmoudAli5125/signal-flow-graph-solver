@@ -6,3 +6,72 @@
   margin-top: 15px;
   background-color: #fafafa;
 }
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100vh; 
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #0f172a; 
+  margin: 0;
+  padding: 0;
+}
+
+.controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+  padding: 15px 25px;
+  background: rgba(30, 41, 59, 0.8);
+  backdrop-filter: blur(10px);
+  color: #fdfbfb;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  z-index: 10;
+}
+
+.controls h1 {
+  margin: 0;
+  font-size: 24px;
+}
+
+button {
+  position: relative;
+  padding: 12px 28px;
+  font-size: 16px;
+  font-weight: 600;
+  color: white;
+  background: linear-gradient(135deg, #3b82f6, #2563eb); 
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); 
+  box-shadow: 0 6px 0 #1e3a8a, 0 10px 15px rgba(0,0,0,0.2);
+}
+
+button:hover {
+  background: linear-gradient(135deg, #60a5fa, #3b82f6);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 0 #1e3a8a, 0 12px 20px rgba(0,0,0,0.3);
+}
+
+button:active, 
+button.active {
+  transform: translateY(6px) !important;
+  box-shadow: 0 0 0 #1e3a8a, 0 2px 5px rgba(0,0,0,0.2) !important;
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: #fff;
+}
+
+
+
+.cy-container {
+  flex-grow: 1;
+  width: 100%;
+  background-color: #1e293b;
+  
+  background-image: radial-gradient(rgb(0, 0, 0) 1.5px, transparent 1.5px);
+  background-size: 50px 50px;
+}
