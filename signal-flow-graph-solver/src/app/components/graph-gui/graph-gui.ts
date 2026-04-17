@@ -56,7 +56,11 @@ export class GraphGui implements AfterViewInit {
             'opacity': 0.5,
             'label': ''
           }
-}
+      },
+      {
+        selector: '.selected-source',
+        style: selectedSourceStyle
+      },
       ],
       layout: {
         name: 'grid',
@@ -83,6 +87,7 @@ export class GraphGui implements AfterViewInit {
 this.cy.on('tap','node', (event) => {
   if(this.state === "AddEdgeSource") {
     this.sourceNode = event.target;
+    this.sourceNode.addClass('selected-source');
     this.state = "AddEdgeTarget";}
   else if (this.state === "AddEdgeTarget") {
         const targetNode = event.target;
@@ -100,6 +105,7 @@ this.cy.on('tap','node', (event) => {
       else {
         alert('Invalid gain value. Please enter a number.');
       }
+        this.sourceNode.removeClass('selected-source');
         this.state = "AddEdgeSource";
   }});
 
@@ -143,9 +149,21 @@ this.cy.on('mousemove',  (event) => {
     if (ghostNode.length > 0) {
       ghostNode.remove();
     }
+    if (this.sourceNode) {
+    this.sourceNode.removeClass('selected-source');
+    }
   }
   delete(){
     this.state = "Delete";
   }
 
 }
+const selectedSourceStyle: any = {
+    'shadow-blur': 90,
+    'shadow-color': '#fbbf24',
+    'shadow-opacity': 0.5,
+    'shadow-offset-x': 0,
+    'shadow-offset-y': 0,
+    'border-width': 6,
+    'border-color': '#fbbf24'
+};
