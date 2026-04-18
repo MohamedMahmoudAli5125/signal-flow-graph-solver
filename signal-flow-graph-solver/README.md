@@ -2,6 +2,33 @@
 
 This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.3.7.
 
+A web-based graphical tool built with **Angular** and **Cytoscape.js** to design Signal Flow Graphs and calculate the overall Transfer Function using **Mason’s Gain Formula**.
+
+## 🛠️ Prerequisites
+Before you begin, ensure you have the following installed:
+* **Node.js** (v18.0.0 or higher)
+* **Angular CLI** (v17.0.0 or higher)
+
+## 🚀 Getting Started
+
+Follow these steps to get the GUI up and running on your local machine:
+
+### Install Dependencies
+Open your terminal in the project root folder and run:
+```bash
+npm install
+```
+
+## Building
+
+To build the project run:
+
+```bash
+ng build
+```
+
+This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+
 ## Development server
 
 To start a local development server, run:
@@ -26,15 +53,6 @@ For a complete list of available schematics (such as `components`, `directives`,
 ng generate --help
 ```
 
-## Building
-
-To build the project run:
-
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
 
 ## Running unit tests
 
