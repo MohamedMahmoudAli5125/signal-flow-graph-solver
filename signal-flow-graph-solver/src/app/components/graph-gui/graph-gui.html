@@ -5,6 +5,52 @@
     <button [class.active]="state === 'AddNode'" (click)="addNode()">➕ Add Node</button>
     <button [class.active]="state === 'AddEdgeSource' || state === 'AddEdgeTarget'" (click)="addEdge()">🔗 Add Edge</button>
     <button [class.active]="state === 'Delete'" (click)="delete()">🗑️ Delete</button>
+    <button (click)="exportGraph()">📤 Export Graph</button>
 </div>
 
 <div #cy class="cy-container"></div>
+<div class="results-sidebar" *ngIf="showResults">
+    <div class="sidebar-header">
+        <h3>Analysis Results</h3>
+        <button (click)="hideResults()" class="close-btn">×</button>
+    </div>
+
+    <div class="final-tf card">
+        <label>Overall Transfer Function</label>
+        <div class="delta-value"> T.F =  {{ resultData.transferFunction | number:'1.2-5' }}</div>
+        <div class="delta-value">Δ = {{ resultData.systemDelta }}</div>
+    </div>
+
+    <div class="section">
+        <h4>Forward Paths</h4>
+        <div *ngFor="let p of resultData.forwardPaths; let i = index" 
+            class="item-card" (click)="highlightOnGraph(p.nodes)">
+        <p>P{{i+1}}: {{ p.nodes.join(' → ') }}</p>
+        <span>Gain: {{ p.gain }} | Δ{{i+1}}: {{ resultData.deltas[i] }}</span>
+        </div>
+    </div>
+
+    <div class="section">
+        <h4>Individual Loops</h4>
+        <div *ngFor="let l of resultData.individualLoops" 
+            class="item-card loop" (click)="highlightOnGraph(l.nodes)">
+        <p>{{ l.nodes.join(' → ') }}</p>
+        <span>Gain: {{ l.gain }}</span>
+        </div>
+    </div>
+    <div class="section" *ngIf="resultData.nonTouchingLoops?.length > 0">
+  <h4>Non-Touching Loops</h4>
+  
+  <div *ngFor="let group of resultData.nonTouchingLoops; let gi = index" class="degree-group">
+    <h5 class="degree-title">Degree {{ group.degree }}</h5>
+    <div *ngFor="let combo of group.combinations; let ci = index" class="item-card non-touching" (click)="highlightMultiplePaths(combo)">
+      <p>Combo {{ ci + 1 }}:</p>
+      <div class="combo-details">
+        <span *ngFor="let loop of combo" class="loop-tag">
+          {{ loop.nodes.join(' → ') }}
+        </span>
+      </div>
+    </div>
+  </div>
+</div>
+</div>

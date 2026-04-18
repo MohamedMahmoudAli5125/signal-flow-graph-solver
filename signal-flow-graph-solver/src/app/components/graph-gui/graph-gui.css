@@ -65,7 +65,43 @@ button.active {
   color: #fff;
 }
 
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
 
+.close-btn {
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  border-radius: 50%;
+  border: 1px solid #475569;
+  background: #1f2937;
+  color: #f8fafc;
+  font-size: 18px;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: none;
+  transition: background 0.15s ease-in-out, transform 0.1s ease-in-out;
+}
+
+
+.final-tf.card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.delta-value {
+  color: #a5f3fc;
+  font-weight: 600;
+}
 
 .cy-container {
   flex-grow: 1;
@@ -74,4 +110,57 @@ button.active {
   
   background-image: radial-gradient(rgb(0, 0, 0) 1.5px, transparent 1.5px);
   background-size: 50px 50px;
+}
+
+.results-sidebar {
+  position: absolute;
+  right: 0; top: 0;
+  width: 320px; height: 100%;
+  background: rgba(30, 41, 59, 0.95);
+  backdrop-filter: blur(10px);
+  border-left: 1px solid #3b82f6;
+  padding: 20px;
+  overflow-y: auto;
+  z-index: 2000;
+  color: white;
+}
+
+.item-card {
+  background: #0f172a;
+  padding: 10px;
+  margin-top: 10px;
+  border-radius: 8px;
+  border-left: 4px solid #2ecc71;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.item-card:hover { transform: scale(1.02); background: #1e293b; }
+
+.degree-group {
+  margin-top: 15px;
+  border-top: 1px solid #334155;
+  padding-top: 10px;
+}
+
+.degree-title {
+  color: #fbbf24;
+  font-size: 0.9rem;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+}
+
+.loop-tag {
+  display: block;
+  background: #1e293b;
+  border: 1px solid #475569;
+  padding: 4px 8px;
+  margin: 4px 0;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  color: #94a3b8;
+}
+
+.item-card.non-touching {
+  border-left-color: #ec4899;
 }
