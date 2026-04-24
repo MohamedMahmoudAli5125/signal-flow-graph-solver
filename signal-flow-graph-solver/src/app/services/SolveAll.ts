@@ -10,9 +10,11 @@ import { PathService } from './path.service';
     providedIn: 'root'
 })
 export class SolveAllService {
-    
+          constructor(private PathService : PathService) { }
+
     Solve(Input: GraphInput): FinalSolverOutput {
         const forwardPaths = this.findForwardPaths(Input);
+        console.log(forwardPaths);
         const individualLoops = this.findIndividualLoops(Input);
         const nonTouchingLoops = this.findNonTouchingLoops(individualLoops);
         const deltas = this.calculateDeltas(forwardPaths, individualLoops, nonTouchingLoops);
@@ -27,7 +29,7 @@ export class SolveAllService {
       systemDelta,
       transferFunction
     };
-
+    console.log("from service" , finalOutput ); 
     return finalOutput;
 
 
@@ -76,7 +78,7 @@ export class SolveAllService {
     
     findForwardPaths(input: GraphInput): Path[] {
         // Implement the logic to find forward paths using the PathService
-        return [];
+       return this.PathService.findForwardPaths(input);
     }
 
     findIndividualLoops(input: GraphInput): Path[] {
@@ -203,12 +205,17 @@ export class SolveAllService {
 
     calculateSystemDelta(individualLoops: Path[], nonTouchingLoops: NonTouchingLoops[]): number {
         // Implement the logic to calculate the overall system delta for best implementation you can add new service to handle system delta calculation and call it here
-        return 0;
+        return this.calculateDeltaFromLoops(individualLoops,nonTouchingLoops);
+        
     }
 
     calculateTransferFunction(forwardPaths: Path[], deltas: number[], systemDelta: number): number {
         // Implement the logic to calculate the overall transfer function using Mason's Gain Formula
-        return 0;
+        let numerator = 0 ;
+        for ( let i = 0 ; i < forwardPaths.length ; i ++){
+          numerator += forwardPaths[i].gain * deltas[i] ;
+        }
+        return numerator / systemDelta ;
     }
      private buildAdjacency(edges: Edge[]): Map<number, Edge[]> {
     const adjacency = new Map<number, Edge[]>();
