@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import cytoscape from 'cytoscape';
 import { GraphInput } from '../../models/graph-input.model';
 import { SolveAllService } from '../../services/SolveAll';
+import is from '@angular/common/locales/extra/is';
 
 @Component({
   selector: 'app-graph-gui',
@@ -19,6 +20,7 @@ export class GraphGui implements AfterViewInit {
   private sourceNode: any = null;
   public resultData: any = null; 
   public showResults = false;
+  private graphInput:GraphInput | undefined ;
 
   constructor(private solver: SolveAllService) {}
   ngAfterViewInit() {
@@ -209,6 +211,7 @@ this.cy.on('mousemove',  (event) => {
     gain: edge.data('gain')   
     }));
     const graphInput: GraphInput = { edges: elements , start: start, end: end };
+    this.graphInput= graphInput;
     this.solveGraph(graphInput);
   }
   solveGraph(graphInput: GraphInput) {
@@ -262,4 +265,40 @@ hideResults() {
   this.cy.elements().removeClass('highlighted');
   this.select();
 }
+exportGraphJSON(): void {
+   this.select();
+  let start = 0 ;
+  let end = 0 ;
+    const elements = this.cy.edges().map(edge => ({ 
+    from: parseInt(edge.data('source').replace('n', '')),
+    to: parseInt(edge.data('target').replace('n', '')),
+    gain: edge.data('gain')   
+    }));
+    const graphInput: GraphInput = { edges: elements , start: start, end: end };
+    this.graphInput= graphInput;
+
+  // if(this.graphInput ===  undefined){
+  //   console.log("undefined");
+  //   return ;
+  // }
+  const graph: GraphInput = {
+    edges: this.graphInput.edges,   
+    start: this.graphInput.start,
+    end: this.graphInput.end
+  };
+
+  const json = JSON.stringify(graph, null, 2);
+
+  const blob = new Blob([json], { type: 'application/json' });
+  const url = window.URL.createObjectURL(blob);
+
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'graph.json';
+  a.click();
+
+  window.URL.revokeObjectURL(url);
+
+}
+
 }

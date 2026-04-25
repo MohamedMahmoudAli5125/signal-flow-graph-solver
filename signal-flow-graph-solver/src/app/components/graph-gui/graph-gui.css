@@ -164,3 +164,15 @@ button.active {
 .item-card.non-touching {
   border-left-color: #ec4899;
 }
+button.export-btn {
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  box-shadow: 0 6px 0 #14532d, 0 10px 15px rgba(0,0,0,0.2);
+}
+
+button.export-btn:hover {
+  background: linear-gradient(135deg, #4ade80, #22c55e);
+}
+
+button.export-btn:active {
+  background: linear-gradient(135deg, #15803d, #166534);
+}

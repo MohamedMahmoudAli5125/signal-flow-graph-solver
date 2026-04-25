@@ -6,6 +6,9 @@
     <button [class.active]="state === 'AddEdgeSource' || state === 'AddEdgeTarget'" (click)="addEdge()">🔗 Add Edge</button>
     <button [class.active]="state === 'Delete'" (click)="delete()">🗑️ Delete</button>
     <button (click)="exportGraph()">📤 Export Graph</button>
+    <button class="export-btn" (click)="exportGraphJSON()">📤 Export Graph (Json)</button>
+        <button class="export-btn" > Import Graph (Json) (NOT IMPLEMENTED YET)</button>
+
 </div>
 
 <div #cy class="cy-container"></div>
