@@ -129,14 +129,23 @@ this.cy.on('tap','node', (event) => {
         const targetNode = event.target;
         const gain = prompt('Enter edge gain:', '1');
           if (gain !== null && !isNaN(parseFloat(gain))) {
+            const sourceId = this.sourceNode.id();
+            const targetId = targetNode.id();
+            const edgeGain = parseFloat(gain);
+            const existingEdge = this.cy.edges(`[source="${sourceId}"][target="${targetId}"]`).first();
+            if (existingEdge.length > 0) {
+              const currentGain = parseFloat(existingEdge.data('gain')) || 0;
+              existingEdge.data('gain', currentGain + edgeGain);
+            } else {
             this.cy.add({
               group: 'edges',
               data: {
-        id: `e${this.edgecounter++}_${this.sourceNode.id()}_${targetNode.id()}`, 
-        source: this.sourceNode.id(), 
-        target: targetNode.id(), 
-        gain: parseFloat(gain)
+          id: `e${this.edgecounter++}_${sourceId}_${targetId}`, 
+          source: sourceId, 
+          target: targetId, 
+          gain: edgeGain
         },});
+            }
       }
       else {
         alert('Invalid gain value. Please enter a number.');
