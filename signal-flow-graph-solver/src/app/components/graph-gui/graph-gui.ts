@@ -310,4 +310,30 @@ exportGraphJSON(): void {
 
 }
 
+importGraphJSON(event: Event): void {
+  const file = (event.target as HTMLInputElement).files?.[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    try {
+      const g = JSON.parse(e.target?.result as string) as GraphInput;
+      if (!g.edges?.length) { alert('Invalid JSON format.'); return; }
+      this.cy.elements().remove();
+      this.nodecounter = this.edgecounter = 1;
+      const nodes = Array.from(new Set(g.edges.flatMap(e => [e.from, e.to]))).sort((a, b) => a - b);
+      const cols = Math.ceil(Math.sqrt(nodes.length));
+      nodes.forEach((n, i) => this.cy.add({ group: 'nodes', data: { id: `n${n}` }, position: { x: (i%cols)*100, y: Math.floor(i/cols)*100 } }));
+      g.edges.forEach((e, i) => this.cy.add({ group: 'edges', data: { id: `e${i}`, source: `n${e.from}`, target: `n${e.to}`, gain: e.gain } }));
+      this.graphInput = g;
+      this.select();
+      (event.target as HTMLInputElement).value = '';
+      alert(`Imported: ${nodes.length} nodes, ${g.edges.length} edges`);
+    } catch (error) {
+      alert(`Import failed: ${error}`);
+      (event.target as HTMLInputElement).value = '';
+    }
+  };
+  reader.readAsText(file);
+}
+
 }
