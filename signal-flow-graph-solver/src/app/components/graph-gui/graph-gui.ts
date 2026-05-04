@@ -1,4 +1,4 @@
-import { Component, ElementRef, ViewChild, AfterViewInit } from '@angular/core';
+import { Component, ElementRef, ViewChild, AfterViewInit , ChangeDetectorRef} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import cytoscape from 'cytoscape';
 import { GraphInput } from '../../models/graph-input.model';
@@ -21,8 +21,11 @@ export class GraphGui implements AfterViewInit {
   public resultData: any = null; 
   public showResults = false;
   private graphInput:GraphInput | undefined ;
+  showGainModal = false;
+  gainInputValue = '1';
+  pendingEdge: { sourceId: string, targetId: string, isEdit: boolean, edgeRef?: any } | null = null;
 
-  constructor(private solver: SolveAllService) {}
+  constructor(private solver: SolveAllService, private cdr: ChangeDetectorRef) {}
   ngAfterViewInit() {
     this.initCytoscape();
   }
@@ -54,7 +57,7 @@ export class GraphGui implements AfterViewInit {
             'line-color': '#ff4136',
             'target-arrow-color': '#ff4136',
             'target-arrow-shape': 'triangle',
-            'curve-style': 'bezier',
+            'curve-style': 'bezier', // Default for short/adjacent edges
             'label': 'data(gain)',
             'text-rotation': 'autorotate',
             'text-margin-x': 0,
@@ -63,6 +66,15 @@ export class GraphGui implements AfterViewInit {
             'font-weight': 'bold',
             'control-point-step-size': 70,
           },
+        },
+        {
+          selector: '.skip-edge',
+          style: {
+            'curve-style': 'unbundled-bezier',
+            'control-point-distances': 'data(curveHeight)',
+            'control-point-weights': 0.5,
+            'text-margin-y': -10,
+          }
         },
         {
           selector: '.highlighted',
@@ -112,14 +124,13 @@ export class GraphGui implements AfterViewInit {
     }
   }
   if (this.state === "Select" && event.target.isEdge() && event.target !== this.cy) {
-    const gain = prompt('Enter new edge gain:', event.target.data('gain'));
-    if (gain !== null && !isNaN(parseFloat(gain))) {
-      event.target.data('gain', parseFloat(gain));
-    } else {
-      alert('Invalid gain value. Please enter a number.');
-    }
+    this.pendingEdge = { sourceId :'' ,targetId: '',isEdit : true, edgeRef: event.target };
+    this.gainInputValue = event.target.data('gain').toString();
+    this.showGainModal = true;
+    this.cdr.detectChanges();
   }
 });
+
 this.cy.on('tap','node', (event) => {
   if(this.state === "AddEdgeSource") {
     this.sourceNode = event.target;
@@ -127,33 +138,16 @@ this.cy.on('tap','node', (event) => {
     this.state = "AddEdgeTarget";}
   else if (this.state === "AddEdgeTarget") {
         const targetNode = event.target;
-        const gain = prompt('Enter edge gain:', '1');
-          if (gain !== null && !isNaN(parseFloat(gain))) {
-            const sourceId = this.sourceNode.id();
-            const targetId = targetNode.id();
-            const edgeGain = parseFloat(gain);
-            const existingEdge = this.cy.edges(`[source="${sourceId}"][target="${targetId}"]`).first();
-            if (existingEdge.length > 0) {
-              const currentGain = parseFloat(existingEdge.data('gain')) || 0;
-              existingEdge.data('gain', currentGain + edgeGain);
-            } else {
-            this.cy.add({
-              group: 'edges',
-              data: {
-          id: `e${this.edgecounter++}_${sourceId}_${targetId}`, 
-          source: sourceId, 
-          target: targetId, 
-          gain: edgeGain
-        },});
-            }
-      }
-      else {
-        alert('Invalid gain value. Please enter a number.');
-      }
-        this.sourceNode.removeClass('selected-source');
-        this.state = "AddEdgeSource";
-  }});
-
+        this.pendingEdge = {
+          sourceId: this.sourceNode.id(),
+          targetId: targetNode.id(),
+          isEdit: false
+        }
+        this.gainInputValue = '1';
+        this.showGainModal = true;
+        this.cdr.detectChanges();
+  }
+});
 this.cy.on('mousemove',  (event) => {
   if (this.state === "AddNode" ){
     const ghostNode = this.cy.getElementById('ghost');
@@ -164,8 +158,78 @@ this.cy.on('mousemove',  (event) => {
 });
 }
 
+confirmGain(){
+  const gain = parseFloat(this.gainInputValue);
+  if(isNaN(gain)) {
+    alert('Please enter a valid number for gain.');
+    return;
+}
+  if(this.pendingEdge?.isEdit) {
+    this.pendingEdge.edgeRef.data('gain', gain);
+  } else if(this.pendingEdge) {
+    const sourceId = this.pendingEdge.sourceId;
+    const targetId = this.pendingEdge.targetId;
+    const existingEdge = this.cy.edges(`[source="${sourceId}"][target="${targetId}"]`).first();
 
+    if (existingEdge.length > 0) {
+      const currentGain = parseFloat(existingEdge.data('gain')) || 0;
+      existingEdge.data('gain', currentGain + gain);
+    } else {
+      
+      // --- NEW ARC CALCULATION LOGIC ---
+      const sNode = this.cy.getElementById(sourceId);
+      const tNode = this.cy.getElementById(targetId);
+      const dx = tNode.position('x') - sNode.position('x');
+      const dy = tNode.position('y') - sNode.position('y');
+      const distance = Math.sqrt(dx * dx + dy * dy);
 
+      let edgeClasses = '';
+      let curveHeight = 0;
+
+      // If the edge spans more than ~1.5 grid units (meaning it skips a node)
+      if (distance > 150) {
+        edgeClasses = 'skip-edge';
+        
+        // A negative distance in Cytoscape automatically forces Left-to-Right 
+        // paths to curve UP, and Right-to-Left paths to curve DOWN!
+        curveHeight = -(distance * 0.35); 
+      }
+      // ---------------------------------
+
+      this.cy.add({
+        group: 'edges',
+        data: {
+          id: `e${this.edgecounter++}_${sourceId}_${targetId}`,
+          source: sourceId,
+          target: targetId,
+          gain: gain,
+          curveHeight: curveHeight // Bind the dynamic height
+        },
+        classes: edgeClasses // Apply the custom arc class
+      });
+    }
+  }
+
+  if(this.sourceNode) {
+    this.sourceNode.removeClass('selected-source');
+  }
+  if(this.pendingEdge && !this.pendingEdge.isEdit) {
+    this.state = "AddEdgeSource";
+  }
+  this.pendingEdge = null;
+  this.showGainModal = false;
+}
+closeGainModal(){
+  this.showGainModal = false;
+  this.pendingEdge = null;
+  if(this.sourceNode){
+    this.sourceNode.removeClass('selected-source');
+
+  }
+  if(this.state ==='AddEdgeTarget'){
+    this.state = "AddEdgeSource";
+  }
+}
 
 
   addNode() {
