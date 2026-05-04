@@ -1,5 +1,7 @@
 #  3anteel El Signal Flow Graph Solver
 
+![Determined to Code](https://images.steamusercontent.com/ugc/914672528575958673/29F69E68831DDB9289C988A4460A475E7C1610CC/?imw=5000&imh=5000&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=false)
+
 A powerful, interactive web-based tool for designing and analyzing Control Systems Signal Flow Graphs (SFG). Built with Angular and Cytoscape.js, this application allows users to visually construct systems and automatically calculates the overall transfer function using **Mason's Gain Formula**.
 
 ##  The Idea
